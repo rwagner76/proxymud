@@ -41,9 +41,9 @@ namespace MobDB
             RegisterTrigger("room.chars1", @"^@w\{roomchars\}$", TriggerRoomChars1, TriggerFlags.None, 1500);
             RegisterTrigger("room.chars2", @"^@w\{/roomchars\}$", TriggerRoomChars2, TriggerFlags.None, 500);
             RegisterTrigger("room.chars3", @"(.*)", TriggerRoomChars3);
-            RegisterTrigger("lastkills1", "@WName                            Level  Exp  From", TriggerLastKills,
+            RegisterTrigger("lastkills1", "@WName                           Level Exp Exp  From", TriggerLastKills,
                             TriggerFlags.NotRegex);
-            RegisterTrigger("lastkills2", @"^@w(.{30})\s+(\d+)\s+\d+\s+(.+)", TriggerLastKills2);
+            RegisterTrigger("lastkills2", @"^@w(.{30})\s+(\d+)\s+\d+\s+\d+\s(.+)", TriggerLastKills2);
 
             Load();
         }
@@ -298,10 +298,10 @@ namespace MobDB
                 str.Append(' ');
             str.Append("{MOB}");
 
-            if(t.EndsWith("[TARGET]"))
+            if(t.EndsWith("[QUEST]"))
             {
-                t = Colors.RemoveDuplicateColors(t.Substring(0, t.LastIndexOf("[TARGET]"))).Trim();
-                str.Append(" @R[TARGET]");
+                t = Colors.RemoveDuplicateColors(t.Substring(0, t.LastIndexOf("[QUEST]"))).Trim();
+                str.Append(" @R[QUEST]");
             }
 
             string area = RoomInfoArea.ToLower();

@@ -152,7 +152,7 @@ namespace Mapper
             {
                 for(int i = _pExits[0].Count - 1; i >= 0; i--)
                 {
-                    if(_pExits[0][i].To.Mapper_OpenBy != null)
+                    if(_pExits[0][i].To == null || _pExits[0][i].To.Mapper_OpenBy != null)
                         _pExits[0].RemoveAt(i);
                     else if(GetScript(r).CanUsePortal(_pExits[0][i], r) && p.CanUsePortal(_pExits[0][i], r))
                     {
@@ -166,7 +166,7 @@ namespace Mapper
             {
                 for(int i = _pExits[1].Count - 1; i >= 0; i--)
                 {
-                    if(_pExits[1][i].To.Mapper_OpenBy != null)
+                    if(_pExits[1][i].To == null || _pExits[1][i].To.Mapper_OpenBy != null)
                         _pExits[1].RemoveAt(i);
                     else if(GetScript(r).CanUsePortal(_pExits[1][i], r) && p.CanUsePortal(_pExits[1][i], r))
                     {
@@ -178,7 +178,9 @@ namespace Mapper
             }
             foreach(Exit e in r.exits)
             {
-                if(e.To.Mapper_OpenBy != null)
+                if(e.To == null)
+                   continue;
+				if(e.To.Mapper_OpenBy != null)
                     continue;
                 if(e.To.Area.Entry == uint.MaxValue)
                     continue;

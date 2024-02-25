@@ -57,10 +57,10 @@ namespace CPHelper
             RegisterTrigger("check", @"^@wYou still have to kill (@c\d @w)?\* (.+?) (@w)?\((.+?)(@w)?\)$", TriggerCheck);
             RegisterTrigger("char.level", @"^\$gmcp\.char\.status\.level (\d+)$", TriggerLevel);
             RegisterTrigger("char.tnl", @"^\$gmcp\.char\.status\.tnl (\d+)$", TriggerTNL);
-            RegisterTrigger("request", @"^@.Commander Barcett tells you 'Good luck in your campaign!'$", TriggerRequest);
+            RegisterTrigger("request", @"^@..+ tells you 'Good luck in your campaign!'$", TriggerRequest);
             RegisterTrigger("cplevel", @"^@cLevel Taken\.\.\.\.\.\.\.\.: @g\[ \s+@w(\d+) @g\]$", TriggerCPLevel);
             RegisterTrigger("gqlevel", @"^@RGlobal Quest@Y: @gGlobal quest # \d+ @whas been declared for levels @g(\d+) @wto @g(\d+)@w\.$", TriggerGQLevel);
-            RegisterTrigger("gqlevel2", @"^@RGlobal Quest@Y: @wThe global quest has been won by @Y\w+ @w- @Y\d+(st|th|rd|nd) @wwin\.$", TriggerGQLevel2);
+            RegisterTrigger("gqlevel2", @"^@RGlobal Quest@Y: @gGlobal quest # \d+ @whas been won by @Y\w+ @w- @Y\d+(st|th|rd|nd) @wwin\.$", TriggerGQLevel2);
             RegisterTrigger("noexp1", @"@RYou will no longer receive experience. Happy questing!", NoexpTrigger1, TriggerFlags.NotRegex);
             RegisterTrigger("noexp2", @"@wYou will now receive experience. Happy leveling!", NoexpTrigger2, TriggerFlags.NotRegex);
             RegisterTrigger("cpcomplete", @"@GCONGRATULATIONS! @wYou have completed your campaign.", TriggerCPComplete, TriggerFlags.NotRegex);

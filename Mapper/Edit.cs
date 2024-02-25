@@ -249,6 +249,36 @@ namespace Mapper
             return true;
         }
 
+        private bool CommandClean(InputData i)
+        {
+            uint[] keys = this.IPortals.Keys.ToArray();
+            int badPortals = 0;
+            foreach(uint x in keys)
+            {
+                if(this.IPortals[x] == null || !this.IRooms.ContainsKey(this.IPortals[x].ToRoom))
+                {
+                    this.IPortals.Remove(x);
+                    badPortals++;
+                }
+            }
+
+            keys = this.IExits.Keys.ToArray();
+            int badExits = 0;
+            foreach(uint x in keys)
+            {
+                if(this.IExits[x] == null || (this.IExits[x].ToRoom != 0 && this.IExits[x].ToRoom != uint.MaxValue && !this.IRooms.ContainsKey(this.IExits[x].ToRoom)))
+                {
+                    if(this.IExits[x] != null && this.IExits[x].From != null)
+                        this.IExits[x].From.exits.Remove(this.IExits[x]);
+                    this.IExits.Remove(x);
+                    badExits++;
+                }
+            }
+
+            World.Instance.SendMessage("@wRemoved @C" + badPortals + " @wfaulty portals and @C" + badExits + " @wfaulty exits.", i.ClientMask);
+            return true;
+        }
+
         private bool CommandCreateExit(InputData i)
         {
             if(!i.Arguments.Success)

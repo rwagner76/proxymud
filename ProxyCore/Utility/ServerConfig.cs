@@ -17,7 +17,7 @@ namespace ProxyCore
         {
             base.OnCreated();
 
-            CreateSetting("Listen.Address", "127.0.0.1", "This is the address that the proxy program will be listening on. You will have to connect to this address with your MUD client. Enter 127.0.0.1 to listen only on current computer, enter LAN IP to listen only in your home network or enter 0.0.0.0 to listen on all addresses (even remote).");
+            CreateSetting("Listen.Address", "0.0.0.0", "This is the address that the proxy program will be listening on. You will have to connect to this address with your MUD client. Enter 127.0.0.1 to listen only on current computer, enter LAN IP to listen only in your home network or enter 0.0.0.0 to listen on all addresses (even remote).");
             CreateSetting("Listen.Port", 4000, "This is the port that the proxy program will be listening on. You will have to enter this port in your MUD client. If you want remote connections you may have to open this port (TCP) in your firewall.");
             CreateSetting("MUD.Address", "aardmud.org", "This is the address for MUD connection.");
             CreateSetting("MUD.Port", 4000, "This is the port for MUD connection.");

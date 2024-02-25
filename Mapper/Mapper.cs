@@ -26,21 +26,22 @@ namespace Mapper
 
             Config = new MapperConfig();
 
-            RegisterCommand("pm", "", CommandMapper);
-            RegisterCommand("all", @"(.+)", CommandAll, 0, CMDFlags.None, "pm");
-            RegisterCommand("count", "", CommandCount, 0, CMDFlags.None, "pm");
-            RegisterCommand("createexit", "^(\\d+)(\\s+\\d+)?\\s+\"(.+)\"$", CommandCreateExit, 0, CMDFlags.None, "pm");
-            RegisterCommand("createportal", "^(\\d+)\\s+\"(.+)\"$", CommandCreatePortal, 0, CMDFlags.None, "pm");
-            RegisterCommand("delete", @"^(area|room|exit|portal)\s+(\d+)", CommandDelete, 3, CMDFlags.None, "pm");
-            RegisterCommand("exits", @"^(help)?(room\s+\d+)?(\d+)?(\s+.+)?", CommandExit, 4, CMDFlags.None, "pm");
-            RegisterCommand("find", @"^(room|area)(\s+exact)?(\s+case)?\s+(.+)", CommandFind, 1, CMDFlags.None, "pm");
-            RegisterCommand("portals", "", CommandPortal, 4, CMDFlags.None, "pm");
-            RegisterCommand("goto", @"(.+)", CommandGoto, 2, CMDFlags.None, "pm");
-            RegisterCommand("import", @"(.+)", CommandImport, 0, CMDFlags.None, "pm");
-            RegisterCommand("roominfo", @"^(help)?(\d+)?(\s+.+)?", CommandRoomInfo, 4, CMDFlags.None, "pm");
-            RegisterCommand("save", @"(.+)", CommandSave, 4, CMDFlags.None, "pm");
-            RegisterCommand("unmapped", @"^(go|all)$", CommandUnmapped, 2, CMDFlags.None, "pm");
-            RegisterCommand("unreconed", @"^(go|all)$", CommandUnreconed, 3, CMDFlags.None, "pm");
+            RegisterCommand("map", "", CommandMapper);
+            RegisterCommand("all", @"(.+)", CommandAll, 0, CMDFlags.None, "map");
+            RegisterCommand("count", "", CommandCount, 0, CMDFlags.None, "map");
+			RegisterCommand("clean", "", CommandClean, 5, CMDFlags.None, "map");
+            RegisterCommand("createexit", "^(\\d+)(\\s+\\d+)?\\s+\"(.+)\"$", CommandCreateExit, 0, CMDFlags.None, "map");
+            RegisterCommand("createportal", "^(\\d+)\\s+\"(.+)\"$", CommandCreatePortal, 0, CMDFlags.None, "map");
+            RegisterCommand("delete", @"^(area|room|exit|portal)\s+(\d+)", CommandDelete, 3, CMDFlags.None, "map");
+            RegisterCommand("exits", @"^(help)?(room\s+\d+)?(\d+)?(\s+.+)?", CommandExit, 4, CMDFlags.None, "map");
+            RegisterCommand("find", @"^(room|area)(\s+exact)?(\s+case)?\s+(.+)", CommandFind, 1, CMDFlags.None, "map");
+            RegisterCommand("portals", "", CommandPortal, 4, CMDFlags.None, "map");
+            RegisterCommand("goto", @"(.+)", CommandGoto, 2, CMDFlags.None, "map");
+            RegisterCommand("import", @"(.+)", CommandImport, 0, CMDFlags.None, "map");
+            RegisterCommand("roominfo", @"^(help)?(\d+)?(\s+.+)?", CommandRoomInfo, 4, CMDFlags.None, "map");
+            RegisterCommand("save", @"(.+)", CommandSave, 4, CMDFlags.None, "map");
+            RegisterCommand("unmapped", @"^(go|all)$", CommandUnmapped, 2, CMDFlags.None, "map");
+            RegisterCommand("unreconed", @"^(go|all)$", CommandUnreconed, 3, CMDFlags.None, "map");
 
             RegisterTrigger("room.id", @"^\$gmcp\.room\.info\.num (-?\d+)$", TriggerRoomInfoNum);
             RegisterTrigger("room.name", @"^\$gmcp\.room\.info\.name (.*)$", TriggerRoomInfoName);
@@ -50,14 +51,19 @@ namespace Mapper
             RegisterTrigger("char.level", @"^\$gmcp\.char\.status\.level (\d+)$", TriggerCharStatusLevel);
             RegisterTrigger("char.tier", @"^\$gmcp\.char\.base\.tier (\d+)$", TriggerCharBaseTier);
             RegisterTrigger("char.remorts", @"^\$gmcp\.char\.base\.remorts (\d+)$", TriggerCharBaseRemorts);
-            RegisterTrigger("gq.join", @"@wYou have now joined the quest. See 'help gquest' for available commands.",
-                            TriggerJoinedGQ, TriggerFlags.NotRegex);
+            RegisterTrigger("gq.join", @"@wYou have now joined @gGlobal Quest # \d+@w. See 'help gquest' for available commands.",
+                            TriggerJoinedGQ);
+            RegisterTrigger("gq.extended", @"@wGlobal Quest: The global quest will go into extended time for \d+ minutes.",
+                TriggerJoinedGQ, TriggerFlags.NotRegex);
             RegisterTrigger("gq.left", @"@wYou are no longer part of the current quest.", TriggerLeftGQ,
                             TriggerFlags.NotRegex);
+            RegisterTrigger("gq.finished", @"@wYou have finished this global quest.", TriggerLeftGQ,
+                TriggerFlags.NotRegex);
             RegisterTrigger("gq.win",
-                            @"^@RGlobal Quest@Y: @wThe global quest has been won by @Y\w+ @w- @Y\d+.. @wwin\.$",
+                            @"^@RGlobal Quest@Y: @gGlobal quest # \d+ @whas been won by @Y\w+ @w- @Y\d+.. @wwin\.$",
                             TriggerLeftGQ);
             RegisterTrigger("gq.quit", @"@wYou are no longer part of the current quest.", TriggerLeftGQ, TriggerFlags.NotRegex);
+            RegisterTrigger("gq.quit", @"@wYou are not in a global quest.", TriggerLeftGQ, TriggerFlags.NotRegex);
             RegisterTrigger("where.name", @"^@GYou are in area : (.+)", TriggerWhereName);
             RegisterTrigger("where.level", @"^@GLevel range is  : @R(\d+) to (\d+)", TriggerWhereLevel);
             RegisterTrigger("areas.start", @"^@WFrom To   Lock  Keyword          Area Name", TriggerAreasStart);
@@ -101,6 +107,7 @@ namespace Mapper
         private void OnDeleted(Room r)
         {
             List<uint> del = new List<uint>();
+			List<uint> del2 = new List<uint>();
             foreach(KeyValuePair<uint, Exit> x in IExits)
             {
                 if(x.Key == uint.MaxValue || x.Key == 0)
@@ -109,10 +116,24 @@ namespace Mapper
                     del.Add(x.Key);
             }
 
+           foreach(KeyValuePair<uint, Exit> x in IPortals)
+           {
+               if(x.Key == uint.MaxValue || x.Key == 0)
+                   continue;
+               if(x.Value == null)
+                   continue;
+               if(!IRooms.ContainsKey(x.Value.ToRoom))
+                   del2.Add(x.Key);
+           }
+			
             foreach(uint x in del)
             {
                 IExits[x].From.exits.Remove(IExits[x]);
                 IExits.Remove(x);
+            }
+           foreach(uint x in del2)
+            {
+                IPortals.Remove(x);
             }
         }
 

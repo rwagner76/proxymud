@@ -15,7 +15,6 @@ namespace ProxyMud.Network
     {
         internal NetworkServer()
         {
-            //string support = Program.Config.GetString("GMCP.Supports", "Core=1, Char=1, Room=1, Comm=1, Rawcolor=1");
             string support = Program.Config.GetString("GMCP.Supports", "Core=1, Char=1, Room=1, Comm=1");
             Match m;
             while((m = _loadSupport.Match(support)).Success)
@@ -40,7 +39,7 @@ namespace ProxyMud.Network
 
         internal void Start()
         {
-            IPAddress ip = IPAddress.Parse(Program.Config.GetString("Listen.Address", "127.0.0.1"));
+            IPAddress ip = IPAddress.Parse(Program.Config.GetString("Listen.Address", "0.0.0.0"));
             if(Server == null)
                 Server = new TcpListener(ip, Program.Config.GetInt32("Listen.Port", 4000));
             {
@@ -66,7 +65,7 @@ namespace ProxyMud.Network
             Server.Start();
 
             Log.Write("Starting core, version " + World.Version + ".");
-            Log.Write("Waiting for connections on " + Program.Config.GetString("Listen.Address", "127.0.0.1") + ":" + Program.Config.GetInt32("Listen.Port", 4000) + ".");
+            Log.Write("Waiting for connections on " + Program.Config.GetString("Listen.Address", "0.0.0.0") + ":" + Program.Config.GetInt32("Listen.Port", 4000) + ".");
         }
 
         internal void Stop()
@@ -217,12 +216,11 @@ namespace ProxyMud.Network
 
                     if((m.AuthMask & ((ulong)1 << (Clients[i].AuthLevel - 1))) == 0)
                         continue;
-//The problem is between here and next comment -- or at least this is what controls the GMCP shit that gets sent to the client.
+
                     if((m.Flags & MessageFlags.GMCP) != MessageFlags.None)
                     {
-//the following line is the problem... looks like my client isnt registering "hasGMCPModule"
-                     //   if(!Clients[i].HasGMCPModule(m.Msg.ToLower()))
-                     //       continue;
+                        if(!Clients[i].HasGMCPModule(m.Msg.ToLower()))
+                            continue;
 
                         if(m.MsgData == null || m.MsgData.Length == 0)
                             continue;
@@ -244,7 +242,6 @@ namespace ProxyMud.Network
                         byte[] data = Encoding.Default.GetBytes(msg + m.LineEnding);
                         strMessage.Write(data, 0, data.Length);
                     }
-//BLAH*/
                 }
 
                 if(strMessage.Length == 0)

@@ -172,7 +172,7 @@ namespace MoonScript
         /// <summary>
         /// Duration of the moons, this is inverted so duration is actually MoonInterval[i] - MoonDuration[i].
         /// </summary>
-        private readonly int[] MoonDuration = new[] { 39, 24, 50 };
+        private readonly int[] MoonDuration = new[] { 37, 22, 48 };
 
         /// <summary>
         /// Current tick timers on the moons. -1 means unknown haven't seen moon yet.
